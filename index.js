@@ -58,10 +58,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Serve website at root "/"
-app.use('/', express.static(path.join(__dirname, '../sonicweb/dist')));
+app.use(express.static(path.join(__dirname, 'sonicweb/dist')));
 
 // Serve dashboard at "/admin"
-app.use('/admin', express.static(path.join(__dirname, '../admin/dist')));
+app.use(express.static(path.join(__dirname, 'admin/dist')));
 
 app.use("/api", auth);
 app.use("/api", category);
@@ -72,6 +72,16 @@ app.use("/api", blogcategory);
 app.use("/api", blogs);
 app.use("/api", projects);
 app.use("/api", contact);
+
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin/dist', 'index.html'))
+})
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'sonicweb/dist', 'index.html'))
+})
+
+
 
 //error handling
 app.use((err, req, res, next) => {
