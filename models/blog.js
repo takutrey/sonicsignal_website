@@ -28,7 +28,7 @@ const Blog = db.define(
     allowNull: true,
   },
   tags: {
-    type: DataTypes.JSON, // or DataTypes.TEXT for comma-separated string
+    type: DataTypes.TEXT, // or DataTypes.TEXT for comma-separated string
     allowNull: true,
   },
   isPublished: {
