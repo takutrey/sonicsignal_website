@@ -8,17 +8,16 @@ const path = require("path");
 const auth = require("./routes/user");
 const category = require("./routes/category");
 const product = require("./routes/product");
-const orders = require('./routes/orders');
-const blogs = require('./routes/blog'); 
-const blogcategory = require('./routes/blogCategory');
-const customer = require('./routes/customer');
-const projects = require('./routes/projects');
+const orders = require("./routes/orders");
+const blogs = require("./routes/blog");
+const blogcategory = require("./routes/blogCategory");
+const customer = require("./routes/customer");
+const projects = require("./routes/projects");
 const contact = require("./routes/contactus");
-const modelAssociations = require('./models/modelAssociations');
+const modelAssociations = require("./models/modelAssociations");
 const app = express();
 
 const PORT = process.env.APP_PORT;
-
 
 modelAssociations();
 
@@ -46,22 +45,25 @@ app.use(
 );
 
 const corsOptions = {
-  origin:[process.env.CLIENT_URL, process.env.CLIENT_URLS],
+  origin: [
+    process.env.CLIENT_URL,
+    process.env.CLIENT_URLS,
+    process.env.CLIENT_URLSS,
+  ],
   credentials: true,
 };
 
 app.use(cors(corsOptions));
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Serve website at root "/"
-app.use(express.static(path.join(__dirname, 'sonicweb/dist')));
+app.use(express.static(path.join(__dirname, "sonicweb/dist")));
 
 // Serve dashboard at "/admin"
-app.use(express.static(path.join(__dirname, 'admin/dist')));
+app.use(express.static(path.join(__dirname, "admin/dist")));
 
 app.use("/api", auth);
 app.use("/api", category);
@@ -73,15 +75,13 @@ app.use("/api", blogs);
 app.use("/api", projects);
 app.use("/api", contact);
 
-app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'admin/dist', 'index.html'))
-})
+app.get("/admin", (req, res) => {
+  res.sendFile(path.join(__dirname, "admin/dist", "index.html"));
+});
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'sonicweb/dist', 'index.html'))
-})
-
-
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "sonicweb/dist", "index.html"));
+});
 
 //error handling
 app.use((err, req, res, next) => {
