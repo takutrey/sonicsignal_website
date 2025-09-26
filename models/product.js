@@ -1,10 +1,10 @@
-'use strict';
-const { DataTypes } = require('sequelize');
-const db = require('../config/config');
-const Category = require('./category');
+"use strict";
+const { DataTypes } = require("sequelize");
+const db = require("../config/config");
+const Category = require("./category");
 
 const Product = db.define(
-  'product',
+  "product",
   {
     id: {
       type: DataTypes.UUID,
@@ -34,7 +34,7 @@ const Product = db.define(
       allowNull: false,
       references: {
         model: Category,
-        key: 'id',
+        key: "id",
       },
     },
     description: {
@@ -61,10 +61,14 @@ const Product = db.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    specifications: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     stock_status: {
-      type: DataTypes.ENUM('In stock', 'Out of stock', 'Pre-order'),
+      type: DataTypes.ENUM("In stock", "Out of stock", "Pre-order"),
       allowNull: false,
-      defaultValue: 'In stock',
+      defaultValue: "In stock",
     },
   },
   { freezeTableName: true, timestamps: true }

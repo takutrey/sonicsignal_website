@@ -1,11 +1,11 @@
-'use strict';
-const { DataTypes } = require('sequelize');
-const db = require('../config/config');
-const Orders = require('./orders');
-const Product = require('./product');
+"use strict";
+const { DataTypes } = require("sequelize");
+const db = require("../config/config");
+const Orders = require("./orders");
+const Product = require("./product");
 
 const OrderProducts = db.define(
-  'orderproducts',
+  "orderproducts",
   {
     id: {
       type: DataTypes.UUID,
@@ -21,7 +21,7 @@ const OrderProducts = db.define(
       allowNull: false,
       references: {
         model: Orders,
-        key: 'id',
+        key: "id",
       },
       validate: {
         notEmpty: true,
@@ -32,7 +32,7 @@ const OrderProducts = db.define(
       allowNull: false,
       references: {
         model: Product,
-        key: 'id',
+        key: "id",
       },
       validate: {
         notEmpty: true,
@@ -54,7 +54,12 @@ const OrderProducts = db.define(
         notEmpty: true,
       },
     },
-    
+    paymentMethod: {
+      type: DataTypes.STRING,
+    },
+    paymentStatus: {
+      type: DataTypes.ENUM("paid", "unpaid"),
+    },
     deletedAt: {
       type: DataTypes.DATE,
       allowNull: true,
@@ -66,6 +71,5 @@ const OrderProducts = db.define(
     paranoid: true,
   }
 );
-
 
 module.exports = OrderProducts;

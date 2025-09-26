@@ -2,8 +2,8 @@
 const { DataTypes } = require("sequelize");
 const db = require("../config/config");
 
-const Customers = db.define(
-  "customers",
+const Testimonials = db.define(
+  "testimonials",
   {
     id: {
       type: DataTypes.UUID,
@@ -14,31 +14,42 @@ const Customers = db.define(
         notEmpty: true,
       },
     },
-    fullName: {
+    firstName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notEmpty: true,
       },
     },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-        isEmail: true,
-      },
-    },
-    phone: {
+    lastName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notEmpty: true,
       },
     },
-    address: {
+    company: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    position: {
+      type: DataTypes.STRING,
+    },
+    comment: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    rating: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    image: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
   },
   {
@@ -47,4 +58,4 @@ const Customers = db.define(
   }
 );
 
-module.exports = Customers;
+module.exports = Testimonials;

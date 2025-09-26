@@ -14,6 +14,9 @@ const blogcategory = require("./routes/blogCategory");
 const customer = require("./routes/customer");
 const projects = require("./routes/projects");
 const contact = require("./routes/contactus");
+const testimonials = require("./routes/testimonials");
+const ecocashPay = require("./routes/ecocashPay");
+const checkEmail = require("./routes/emailExistence");
 const modelAssociations = require("./models/modelAssociations");
 const app = express();
 
@@ -45,7 +48,11 @@ app.use(
 );
 
 const corsOptions = {
-  origin: [process.env.CLIENT_URL, process.env.CLIENT_URLS],
+  origin: [
+    process.env.CLIENT_URL,
+    process.env.CLIENT_URLS,
+    process.env.ECOCASH_URL,
+  ],
   credentials: true,
 };
 
@@ -65,11 +72,14 @@ app.use("/api", auth);
 app.use("/api", category);
 app.use("/api", product);
 app.use("/api", orders);
-app.use("/api", customer);
+app.use("/api/customers", customer);
 app.use("/api", blogcategory);
 app.use("/api", blogs);
 app.use("/api", projects);
 app.use("/api", contact);
+app.use("/api/testimonials", testimonials);
+app.use("/api/ecocash", ecocashPay);
+app.use("/api/check-email", checkEmail);
 
 app.get("/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "admin/dist", "index.html"));

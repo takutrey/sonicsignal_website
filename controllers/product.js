@@ -4,7 +4,7 @@ const Product = require("../models/product");
 const ProductHistory = require("../models/product-history");
 const pluralize = require("pluralize");
 
-const { Op, literal } = require("sequelize");
+const { Op, fn, col, where } = require("sequelize");
 
 const addProduct = async (req, res) => {
   const transaction = await db.transaction();
@@ -20,7 +20,7 @@ const addProduct = async (req, res) => {
       stock_status,
     } = req.body;
 
-    // Parse the specifications field if it's a JSON string
+    // Parse specifications if it's a JSON string
     let parsedSpecifications = specifications;
     if (typeof specifications === "string") {
       try {
@@ -32,16 +32,16 @@ const addProduct = async (req, res) => {
       }
     }
 
-    // Validate the name
+    // Validate name
     if (!name || typeof name !== "string") {
       return res.status(400).json({ message: "Invalid product name" });
     }
 
-    // Validate the specifications
+    // Validate specifications
     if (parsedSpecifications && typeof parsedSpecifications !== "object") {
-      return res
-        .status(400)
-        .json({ message: "Specifications must be a JSON object" });
+      return res.status(400).json({
+        message: "Specifications must be a JSON object",
+      });
     }
 
     const lowerCaseName = name.toLowerCase().trim();
@@ -59,13 +59,14 @@ const addProduct = async (req, res) => {
       noHyphens,
     ]);
 
+    // ✅ Use Sequelize.where with fn & col for safe escaping
     const product = await Product.findOne({
       where: {
         category_id,
         price,
-        [Op.or]: [...nameVariations].map((variation) => ({
-          [Op.and]: [literal(`LOWER(name) = LOWER('${variation}')`)],
-        })),
+        [Op.or]: [...nameVariations].map((variation) =>
+          where(fn("LOWER", col("name")), variation)
+        ),
       },
       transaction,
     });
@@ -77,7 +78,7 @@ const addProduct = async (req, res) => {
       });
     }
 
-    await Product.create(
+    const products = await Product.create(
       {
         name,
         category_id,
@@ -86,20 +87,21 @@ const addProduct = async (req, res) => {
         quantity,
         stock_status,
         description,
-        specifications: JSON.stringify(parsedSpecifications), // Store as JSON string
+        specifications: JSON.stringify(parsedSpecifications),
         image: req.file?.path.replace(/\\/g, "/"),
       },
       { transaction }
     );
 
-
     await transaction.commit();
 
     res.status(200).json({
       message: "Product added successfully",
+      products,
     });
   } catch (error) {
     await transaction.rollback();
+    console.error("error", error);
     return res.status(500).json({
       message: "Internal server error: " + error.message,
     });
@@ -187,6 +189,7 @@ const getAllProducts = async (req, res) => {
           product.specifications = JSON.parse(product.specifications);
         }
       });
+
       return res.status(200).json(response);
     }
   } catch (error) {
@@ -215,6 +218,8 @@ const getProductById = async (req, res) => {
       product.specifications = JSON.parse(product.specifications);
     }
 
+    console.log("Single product", product);
+
     return res.status(200).json(product);
   } catch (error) {
     return res
@@ -241,7 +246,9 @@ const getProductByCategoryId = async (req, res) => {
     });
 
     if (!products || products.length === 0) {
-      return res.status(404).json({ message: "No products found in this category!" });
+      return res
+        .status(404)
+        .json({ message: "No products found in this category!" });
     }
 
     // Convert specifications back to JSON object
@@ -258,8 +265,6 @@ const getProductByCategoryId = async (req, res) => {
       .json({ message: "Internal server error: " + error.message });
   }
 };
-
-
 
 module.exports = {
   addProduct,

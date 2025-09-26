@@ -1,10 +1,10 @@
-'use strict';
-const { DataTypes } = require('sequelize');
-const db = require('../config/config');
-const Customers = require('./customers');
+"use strict";
+const { DataTypes } = require("sequelize");
+const db = require("../config/config");
+const Customers = require("./customers");
 
 const Orders = db.define(
-  'orders',
+  "orders",
   {
     id: {
       type: DataTypes.UUID,
@@ -20,7 +20,7 @@ const Orders = db.define(
       allowNull: false,
       references: {
         model: Customers,
-        key: 'id',
+        key: "id",
       },
       validate: {
         notEmpty: true,
@@ -30,11 +30,14 @@ const Orders = db.define(
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
     },
-    status: {
-      type: DataTypes.ENUM('pending','completed'),
-      defaultValue: 'pending',
+    order_type: {
+      type: DataTypes.ENUM("delivery", "pickup"),
+      defaultValue: "delivery",
     },
-    
+    status: {
+      type: DataTypes.ENUM("pending", "completed"),
+      defaultValue: "pending",
+    },
   },
   {
     freezeTableName: true,
