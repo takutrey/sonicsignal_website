@@ -1,0 +1,32 @@
+
+POST http://localhost:5050/api/add-user
+Content-Type: application/json
+
+{
+  
+  "name": "SonicShop",
+    "email": "sonicshop@sonicsignal.co.zw",
+    "role": "admin"
+}
+
+####
+PATCH http://localhost:5050/api/signup
+Content-Type: application/json
+
+{
+    "email": "sonicshop@sonicsignal.co.zw",
+    "password": "Sonic@2025",
+    "confirmPassword": "Sonic@2025"
+}
+
+###
+POST http://localhost:5050/api/signin
+Content-Type: application/json
+
+{
+    "email": "sonicshop@sonicsignal.co.zw",
+    "password": "Sonic@2025"
+}
+
+####
+GET http://localhost:5050/api/product/4ee39463-a0fb-49b2-878b-8d599d517043
