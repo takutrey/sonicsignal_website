@@ -209,7 +209,7 @@ const getOrders = async (req, res) => {
         },
         {
           model: Customers,
-          attributes: ["id", "firstName", "lastName", "phone", "email"],
+          attributes: ["id", "fullname", "phone", "email"],
         },
       ],
       order: [["createdAt", "DESC"]],
@@ -222,8 +222,7 @@ const getOrders = async (req, res) => {
       customer: order.customer
         ? {
             id: order.customer.id,
-            firstName: order.customer.firstName,
-            lastName: order.customer.lastName,
+            fullName: order.customer.fullName,
             phone: order.customer.phone,
             email: order.customer.email,
           }
@@ -237,8 +236,12 @@ const getOrders = async (req, res) => {
       })),
     }));
 
+    console.log(formattedOrders);
+
     return res.status(200).json(formattedOrders);
   } catch (error) {
+          console.log(error);
+
     return res.status(500).json({
       message: "Internal server error" + error.message,
     });
