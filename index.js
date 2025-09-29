@@ -66,7 +66,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.static(path.join(__dirname, "sonicweb/dist")));
 
 // Serve dashboard at "/admin"
-app.use(express.static(path.join(__dirname, "admin/dist")));
+app.use("/admin", express.static(path.join(__dirname, "admin/dist")));
 
 app.use("/api", auth);
 app.use("/api", category);
@@ -81,8 +81,8 @@ app.use("/api/testimonials", testimonials);
 app.use("/api/ecocash", ecocashPay);
 app.use("/api/check-email", checkEmail);
 
-app.get("/admin", (req, res) => {
-  res.sendFile(path.join(__dirname, "admin/dist", "index.html"));
+app.get("/admin/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "admin/dist/index.html"));
 });
 
 app.get("*", (req, res) => {
