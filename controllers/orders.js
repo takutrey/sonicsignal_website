@@ -99,101 +99,6 @@ const sendInvoiceToEmail = async (req, res) => {
   }
 };
 
-/*
-const addOrderDetails = async(req, res) => {
-    const transaction = await db.transaction();
-
-    try{
-        const {
-            orderNumber,
-            customer,  
-            items,       
-            total
-        } = req.body;
-
-        const {
-            firstName,
-            lastName,
-            email,
-            phone,
-        } = customer;
-
-        const totalAmount = total;
-        
-        
-        if (!orderNumber || !firstName || !lastName || !email || !phone || !total || !items) {
-            return res.status(400).json({
-                error: 'Missing required fields',
-                missingFields: [
-                    !orderNumber && 'orderNumber',
-                    !firstName && 'customer.firstName',
-                    !lastName && 'customer.lastName',
-                    !email && 'customer.email',
-                    !phone && 'customer.phone',
-                    !items && 'items',
-                    !total && 'total'
-                ].filter(Boolean)
-            });
-        }
-
-        const newOrder = await Orders.create({
-            customerId: customer.id,                   
-            total_amount: totalAmount, 
-            status: "pending"
-        }, {transaction}); 
-        
-
-        for (let item of items) {
-            const product = await Product.findOne({
-                where: { id: item.id },
-                transaction
-            });
-        
-            if (!product) {
-                throw new Error(`Product with id ${item.id} not found`);
-            }
-        
-            if (product.quantity < item.quantity) {
-                return res.status(400).json({ error: `Not enough stock for product ${product.name}` });
-            }
-        
-            await OrderProducts.create({
-                orderId: newOrder.id,
-                productId: item.id,
-                quantity: item.quantity, // ✅ fixed
-                priceAtPurchase: product.price,
-            }, { transaction });
-        
-            await Product.update(
-                {
-                    quantity: product.quantity - item.quantity,
-                },
-                {
-                    where: { id: item.id },
-                    transaction
-                }
-            );
-        }
-        
-
-        await transaction.commit();
-
-        res.status(201).json({
-            message: "Order created sucessfully",
-            newOrder
-        })
-
-    } catch(error) {
-        await transaction.rollback();
-        console.error("Error creating order", error);
-        res.status(500).json({
-            message: "Internal server error", error
-        })
-
-    }
-}
-*/
-
 const getOrders = async (req, res) => {
   try {
     const response = await Orders.findAll({
@@ -209,7 +114,7 @@ const getOrders = async (req, res) => {
         },
         {
           model: Customers,
-          attributes: ["id", "fullname", "phone", "email"],
+          attributes: ["id", "fullName", "phone", "email"],
         },
       ],
       order: [["createdAt", "DESC"]],
@@ -225,6 +130,7 @@ const getOrders = async (req, res) => {
             fullName: order.customer.fullName,
             phone: order.customer.phone,
             email: order.customer.email,
+            address: order.customer.address,
           }
         : null,
       createdAt: order.createdAt,
@@ -240,7 +146,7 @@ const getOrders = async (req, res) => {
 
     return res.status(200).json(formattedOrders);
   } catch (error) {
-          console.log(error);
+    console.log(error);
 
     return res.status(500).json({
       message: "Internal server error" + error.message,

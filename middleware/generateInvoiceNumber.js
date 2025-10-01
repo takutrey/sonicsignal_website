@@ -1,3 +1,6 @@
+const Orders = require("../models/orders");
+const { Sequelize } = require("sequelize");
+
 // Backend function to generate next invoice number
 const generateNextInvoiceNumber = async () => {
   const date = new Date();

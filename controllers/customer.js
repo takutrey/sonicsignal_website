@@ -18,7 +18,6 @@ const addCustomer = async (req, res) => {
       where: { email },
     });
 
-    // If the customer doesn't exist, create a new one
     if (!existingCustomer) {
       existingCustomer = await Customers.create(
         {
@@ -54,7 +53,6 @@ const addCustomer = async (req, res) => {
       }
 
       if (product.quantity < item.quantity) {
-        console.log("Product quantity loww");
         return res
           .status(400)
           .json({ error: `Not enough stock for product ${product.name}` });
@@ -72,9 +70,17 @@ const addCustomer = async (req, res) => {
         { transaction }
       );
 
+      const stockQuantity = product.quantity - item.quantity;
+      let stockStatus = "In stock";
+
+      if (stockQuantity === 0) {
+        stockStatus = "Out of Stock";
+      }
+
       await Product.update(
         {
-          quantity: product.quantity - item.quantity,
+          quantity: stockQuantity,
+          stock_status: stockStatus,
         },
         {
           where: { id: item.id },
@@ -93,7 +99,6 @@ const addCustomer = async (req, res) => {
     });
   } catch (error) {
     await transaction.rollback();
-    console.error("Error creating customer or order:", error.message);
     res.status(500).json({
       message: "Internal server error",
       error: error.message,
