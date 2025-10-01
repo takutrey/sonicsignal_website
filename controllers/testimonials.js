@@ -3,9 +3,28 @@ const db = require("../config/config");
 
 const addTestimonial = async (req, res) => {
   const transaction = await db.transaction();
-  const { firstname, lastname, position, company, comment, rating } = req.body;
+  const {
+    firstname,
+    lastname,
+    position,
+    company,
+    comment,
+    rating,
+    recaptchaToken,
+  } = req.body;
 
   try {
+    const recaptchaResponse = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`
+    );
+
+    if (!recaptchaResponse.data.success) {
+      return res.status(400).json({
+        success: false,
+        error: "reCAPTCHA verification failed",
+      });
+    }
+
     const testimonial = await Testimonials.create(
       {
         firstName: firstname,

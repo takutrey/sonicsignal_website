@@ -5,9 +5,34 @@ const contactUs = async (req, res) => {
   const { name, email, message, token } = req.body;
 
   try {
+    // Better validation with proper checks
     if (!email || !message || !name || !token) {
+      console.log("Missing fields:", { name, email, message, token });
       return res.status(400).json({
-        error: "Missing required email, full name or message",
+        success: false,
+        error: "Missing required fields: name, email, message, or token",
+      });
+    }
+
+    // Validate field types and formats
+    if (typeof name !== "string" || name.trim() === "") {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid name",
+      });
+    }
+
+    if (typeof email !== "string" || !email.includes("@")) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid email format",
+      });
+    }
+
+    if (typeof message !== "string" || message.trim() === "") {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid message",
       });
     }
 
@@ -29,7 +54,7 @@ const contactUs = async (req, res) => {
       text: `
             From: ${name}
             Email: ${email} 
-            message: ${message}
+            Message: ${message}
             `,
     });
 
@@ -40,6 +65,7 @@ const contactUs = async (req, res) => {
   } catch (error) {
     console.error("Email not sent", error);
     return res.status(500).json({
+      success: false,
       error: "Failed to send email",
     });
   }
