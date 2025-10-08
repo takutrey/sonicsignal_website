@@ -26,16 +26,16 @@ const addCategory = async (req, res) => {
       singularName,
       pluralName,
       noSpaces,
-      noHyphens
+      noHyphens,
     ]);
 
     // Check if any variation of the name already exists
     const category = await Category.findOne({
       where: {
-         [Op.or]: [...nameVariations].map((variation) => ({
+        [Op.or]: [...nameVariations].map((variation) => ({
           [Op.and]: [
-            literal(`LOWER(name) = LOWER('${variation}')`) // Ensures case-insensitive match
-          ]
+            literal(`LOWER(name) = LOWER('${variation}')`), // Ensures case-insensitive match
+          ],
         })),
       },
       transaction,
@@ -48,7 +48,7 @@ const addCategory = async (req, res) => {
       });
     }
 
-    await Category.create(
+    const categoryadded = await Category.create(
       {
         name,
         isActive,
@@ -60,6 +60,7 @@ const addCategory = async (req, res) => {
 
     return res.status(200).json({
       message: "Category created successfully",
+      categoryadded,
     });
   } catch (error) {
     await transaction.rollback();
@@ -105,7 +106,9 @@ const getAllCategory = async (req, res) => {
   try {
     const response = await Category.findAll();
 
-    if (response && response.length > 0) return res.status(200).json(response);
+    console.log(response);
+
+    return res.status(200).json(response);
   } catch (error) {
     return res
       .status(500)
@@ -128,7 +131,6 @@ const getAllActiveCategory = async (req, res) => {
       .json({ message: "Internal server error: " + error.message });
   }
 };
-
 
 const getSalesByCategory = async (req, res) => {
   try {
@@ -159,7 +161,7 @@ const getSalesByCategory = async (req, res) => {
               ELSE 0 
             END`)
           ),
-          "sales_last_week"
+          "sales_last_week",
         ],
         // Sales in last month
         [
@@ -171,7 +173,7 @@ const getSalesByCategory = async (req, res) => {
               ELSE 0 
             END`)
           ),
-          "sales_last_month"
+          "sales_last_month",
         ],
         // Sales in last 3 months
         [
@@ -183,7 +185,7 @@ const getSalesByCategory = async (req, res) => {
               ELSE 0 
             END`)
           ),
-          "sales_last_3_months"
+          "sales_last_3_months",
         ],
       ],
       include: [
@@ -211,7 +213,6 @@ const getSalesByCategory = async (req, res) => {
       group: ["Category.id", "Category.name"],
     });
 
-    
     return res.status(200).json(sales);
   } catch (error) {
     console.error("Error fetching sales by category:", error);
@@ -219,12 +220,10 @@ const getSalesByCategory = async (req, res) => {
   }
 };
 
-
-
 module.exports = {
   addCategory,
   updateCategory,
   getAllCategory,
   getAllActiveCategory,
-  getSalesByCategory
+  getSalesByCategory,
 };
